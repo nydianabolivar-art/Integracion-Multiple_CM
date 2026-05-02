@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase interactiva: Integrales en línea, dobles y triples</title>
+  <style>
+    :root{
+      --bg:#FFFFFF;
+      --card:#FFFFFF;
+      --ink:#1e293b;
+      --muted:#64748b;
+      --primary:#FF6600;
+      --primary-dark:#cc5200;
+      --soft:#fff3eb;
+      --accent:#FF6600;
+      --warn:#b34700;
+      --warn-soft:#fff7f0;
+      --ok:#994000;
+      --ok-soft:#fff3eb;
+      --bad:#7a2f00;
+      --bad-soft:#fff3eb;
+      --border:#ffd1b3;
+      --shadow: 0 10px 30px rgba(255, 102, 0, .12);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:#FFFFFF;
+      color:var(--ink);
+      line-height:1.55;
+    }
+    header{
+      padding:42px 22px 26px;
+      background:linear-gradient(135deg,#FF6600 0%,#ff8533 55%,#FFFFFF 160%);
+      color:#FFFFFF;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+    .hero{display:grid;grid-template-columns:1.3fr .7fr;gap:22px;align-items:center}
+    h1{font-size:clamp(2rem,4vw,3.2rem);line-height:1.05;margin:0 0 12px;font-weight:800}
+    h2{font-size:1.65rem;margin:8px 0 14px;color:#1e293b}
+    h3{font-size:1.18rem;margin:18px 0 8px;color:#FF6600}
+    h4{font-size:1rem;margin:14px 0 6px;color:#FF6600}
+    p{margin:8px 0}
+    .lead{font-size:1.1rem;max-width:820px;color:#FFFFFF}
+    .badge{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);padding:7px 10px;border-radius:999px;margin:4px 5px 4px 0;font-size:.9rem}
+    .hero-card{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:var(--radius);padding:18px;backdrop-filter: blur(8px)}
+    .hero-card strong{display:block;margin-bottom:7px;color:white}
+    nav.sticky{
+      position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.92);backdrop-filter: blur(10px);border-bottom:1px solid var(--border)
+    }
+    .nav-inner{display:flex;gap:8px;overflow-x:auto;padding:12px 18px;max-width:1180px;margin:0 auto}
+    .nav-inner a{white-space:nowrap;text-decoration:none;color:#1e293b;border:1px solid var(--border);padding:8px 12px;border-radius:999px;background:#FFFFFF;font-size:.92rem}
+    .nav-inner a:hover{background:var(--soft);border-color:#FF6600}
+    main{padding:28px 0 56px}
+    section{margin:24px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{border:1px solid var(--border);border-radius:16px;padding:18px;background:#FFFFFF}
+    .soft{background:#FFFFFF;border-color:#FF6600}
+    .green{background:#FFFFFF;border-color:#FF6600}
+    .amber{background:var(--warn-soft);border-color:#fde68a}
+    .formula{font-family:"Times New Roman", serif;background:#FFFFFF;border:1px dashed #FF6600;padding:12px;border-radius:12px;font-size:1.12rem;overflow:auto}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+    .tab-btn{border:1px solid var(--border);background:#FFFFFF;padding:9px 12px;border-radius:999px;cursor:pointer;font-weight:600;color:#1e293b}
+    .tab-btn.active{background:var(--primary);color:#FFFFFF;border-color:var(--primary)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    details{border:1px solid var(--border);border-radius:14px;padding:12px 14px;background:#FFFFFF;margin:10px 0}
+    summary{cursor:pointer;font-weight:700;color:#FF6600}
+    .btn{border:0;background:var(--primary);color:#FFFFFF;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;margin:6px 6px 6px 0}
+    .btn:hover{background:var(--primary-dark)}
+    .btn.secondary{background:#0f766e}
+    input, select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;font:inherit;background:#FFFFFF}
+    label{display:block;font-weight:700;margin:10px 0 5px}
+    .result{margin-top:12px;padding:12px;border-radius:12px;background:#FFFFFF;border:1px solid var(--border);min-height:42px}
+    .feedback.ok{background:var(--ok-soft);border:1px solid #FF6600;color:var(--ok)}
+    .feedback.bad{background:var(--bad-soft);border:1px solid #FF6600;color:var(--bad)}
+    table{width:100%;border-collapse:collapse;margin:14px 0;background:#FFFFFF;border-radius:14px;overflow:hidden}
+    th,td{border:1px solid var(--border);padding:11px;text-align:left;vertical-align:top}
+    th{background:#FF6600;color:#FFFFFF}
+    .small{font-size:.92rem;color:var(--muted)}
+    .checklist li{margin:8px 0}
+    .pill{display:inline-block;padding:4px 9px;border-radius:999px;background:#fff3eb;font-size:.82rem;color:#1e293b;font-weight:700}
+    canvas{width:100%;height:270px;border:1px solid var(--border);border-radius:16px;background:#FFFFFF}
+    .footer{font-size:.9rem;color:#1e293b;text-align:center;margin-top:30px;border-top:2px solid #FF6600;padding-top:18px}
+    .role{border-left:5px solid var(--primary);padding-left:12px;margin:8px 0}
+    @media (max-width:900px){.hero,.grid-2,.grid-3{grid-template-columns:1fr}section{padding:18px}.nav-inner{padding:10px}}
+    @media print{nav.sticky,.btn{display:none}body{background:#FFFFFF}section{box-shadow:none;break-inside:avoid}.tab-panel{display:block!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <span class="badge">Cálculo Multivariado</span>
+        <span class="badge">Modelo universidad-empresa</span>
+        <span class="badge">Trabajo colaborativo por equipos</span>
+        <h1>Clase interactiva: Integrales en línea, múltiples, dobles y triples</h1>
+        <p class="lead">Material guiado para comprender, interpretar y aplicar integrales multivariadas en contextos de Ingeniería Multimedia, Ingeniería Industrial, Ciencia de Datos, Software y Sistemas.</p>
+      </div>
+      <div class="hero-card">
+        <strong>Resultado de aprendizaje de la sesión</strong>
+        <p>Interpreta y formula modelos de acumulación, flujo, trabajo, área, volumen y densidad mediante integrales en línea, dobles y triples, argumentando su utilidad en problemas profesionales.</p>
+        <strong>Producto esperado</strong>
+        <p>Solución guiada de casos y mini-reto por equipos con interpretación técnica y empresarial.</p>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sticky">
+    <div class="nav-inner">
+      <a href="#inicio">Inicio</a>
+      <a href="#conexion">Conexión</a>
+      <a href="#mapa">Mapa conceptual</a>
+      <a href="#linea">Integrales en línea</a>
+      <a href="#dobles">Integrales dobles</a>
+      <a href="#triples">Integrales triples</a>
+      <a href="#comparador">Comparador</a>
+      <a href="#simulador">Simulador</a>
+      <a href="#casos">Casos aplicados</a>
+      <a href="#quiz">Verificación</a>
+      <a href="#reto">Reto por equipos</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="inicio">
+      <h2>Propósito de la clase</h2>
+      <div class="grid grid-3">
+        <div class="card soft">
+          <h3>Interpretar</h3>
+          <p>Reconocer qué representa una integral: acumulación sobre una curva, una región plana o un sólido.</p>
+        </div>
+        <div class="card green">
+          <h3>Formular</h3>
+          <p>Plantear límites, región de integración, función integranda y diferencial correspondiente.</p>
+        </div>
+        <div class="card amber">
+          <h3>Argumentar</h3>
+          <p>Explicar el resultado en términos técnicos, operativos y empresariales, evitando respuestas puramente numéricas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="conexion">
+      <h2>Actividad de conexión: ¿Dónde se acumula valor?</h2>
+      <p>Antes de hablar de fórmulas, cada equipo analiza una situación y decide qué tipo de integral sería más pertinente.</p>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Situaciones rápidas</h3>
+          <ol>
+            <li>Una cámara virtual sigue una trayectoria curva y se desea medir el trabajo realizado por una fuerza de estabilización.</li>
+            <li>Una empresa desea calcular el material necesario para cubrir una superficie irregular.</li>
+            <li>Un sistema de almacenamiento desea estimar la densidad total de calor dentro de un volumen cerrado.</li>
+            <li>Un equipo de analítica quiere sumar una variable de riesgo distribuida sobre una zona de operación.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Pregunta detonante</h3>
+          <p>¿La acumulación ocurre sobre una trayectoria, sobre una región plana o dentro de un volumen?</p>
+          <label for="conexionSelect">Selecciona la estructura principal</label>
+          <select id="conexionSelect">
+            <option value="">Seleccionar...</option>
+            <option value="linea">Trayectoria o curva</option>
+            <option value="doble">Región plana o superficie proyectada</option>
+            <option value="triple">Volumen tridimensional</option>
+          </select>
+          <button class="btn" onclick="respuestaConexion()">Ver orientación</button>
+          <div id="conexionResult" class="result"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mapa">
+      <h2>Mapa conceptual de decisión</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <span class="pill">1 dimensión</span>
+          <h3>Integral en línea</h3>
+          <p>Se integra sobre una curva parametrizada. Sirve para longitud, masa de un cable, trabajo de un campo de fuerzas o circulación.</p>
+          <div class="formula">∫<sub>C</sub> f(x,y,z) ds &nbsp;&nbsp; o &nbsp;&nbsp; ∫<sub>C</sub> F · dr</div>
+        </div>
+        <div class="card">
+          <span class="pill">2 dimensiones</span>
+          <h3>Integral doble</h3>
+          <p>Se integra sobre una región del plano. Sirve para área, volumen bajo una superficie, masa de una lámina o acumulación distribuida.</p>
+          <div class="formula">∫∫<sub>R</sub> f(x,y) dA</div>
+        </div>
+        <div class="card">
+          <span class="pill">3 dimensiones</span>
+          <h3>Integral triple</h3>
+          <p>Se integra dentro de una región sólida. Sirve para volumen, masa, carga, calor o concentración en un cuerpo tridimensional.</p>
+          <div class="formula">∫∫∫<sub>E</sub> f(x,y,z) dV</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="linea">
+      <h2>Integrales en línea</h2>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event,'linea-concepto')">Concepto</button>
+        <button class="tab-btn" onclick="openTab(event,'linea-proceso')">Procedimiento</button>
+        <button class="tab-btn" onclick="openTab(event,'linea-ejemplo')">Ejemplo resuelto</button>
+        <button class="tab-btn" onclick="openTab(event,'linea-aplicacion')">Aplicación</button>
+      </div>
+      <div id="linea-concepto" class="tab-panel active">
+        <p>Una integral en línea acumula una magnitud a lo largo de una curva. La curva puede representar una ruta de desplazamiento, un cable, una trayectoria de cámara, el recorrido de un robot o el flujo que sigue una partícula.</p>
+        <div class="grid grid-2">
+          <div class="card soft">
+            <h3>Integral de una función escalar</h3>
+            <div class="formula">∫<sub>C</sub> f(x,y,z) ds = ∫<sub>a</sub><sup>b</sup> f(r(t)) ||r'(t)|| dt</div>
+            <p>Se usa cuando la magnitud depende de la posición sobre la curva: densidad, temperatura, costo por metro o intensidad.</p>
+          </div>
+          <div class="card green">
+            <h3>Integral de un campo vectorial</h3>
+            <div class="formula">∫<sub>C</sub> F · dr = ∫<sub>a</sub><sup>b</sup> F(r(t)) · r'(t) dt</div>
+            <p>Se usa para trabajo, circulación o efecto acumulado de una fuerza sobre una trayectoria.</p>
+          </div>
+        </div>
+      </div>
+      <div id="linea-proceso" class="tab-panel">
+        <ol>
+          <li>Identificar la curva C y parametrizarla como r(t).</li>
+          <li>Definir el intervalo de recorrido a ≤ t ≤ b.</li>
+          <li>Calcular r'(t).</li>
+          <li>Si es integral escalar, calcular ||r'(t)||. Si es integral vectorial, calcular el producto punto F(r(t)) · r'(t).</li>
+          <li>Integrar respecto a t.</li>
+          <li>Interpretar el resultado en el contexto del problema.</li>
+        </ol>
+      </div>
+      <div id="linea-ejemplo" class="tab-panel">
+        <h3>Ejemplo académico</h3>
+        <p>Calcular ∫<sub>C</sub> (x + y) ds, donde C está dada por r(t) = (t, t²), 0 ≤ t ≤ 1.</p>
+        <details open><summary>Desarrollo paso a paso</summary>
+          <p>1. x = t, y = t², por tanto f(r(t)) = t + t².</p>
+          <p>2. r'(t) = (1, 2t), entonces ||r'(t)|| = √(1 + 4t²).</p>
+          <p>3. La integral queda:</p>
+          <div class="formula">∫<sub>0</sub><sup>1</sup> (t + t²)√(1 + 4t²) dt</div>
+          <p>4. Esta integral puede aproximarse numéricamente si no se busca una forma cerrada simple.</p>
+        </details>
+      </div>
+      <div id="linea-aplicacion" class="tab-panel">
+        <h3>Aplicación empresarial</h3>
+        <p>En Ingeniería Multimedia, una trayectoria de cámara en una animación 3D puede representarse mediante una curva. Si el costo computacional por unidad de recorrido cambia según la posición de la cámara, una integral en línea permite estimar el costo total de renderizado sobre la ruta.</p>
+        <p>En Ingeniería Industrial, si un robot de inspección recorre una línea de producción y la resistencia al movimiento cambia por zonas, la integral de campo vectorial permite estimar el trabajo total requerido por el sistema.</p>
+      </div>
+    </section>
+
+    <section id="dobles">
+      <h2>Integrales dobles</h2>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event,'doble-concepto')">Concepto</button>
+        <button class="tab-btn" onclick="openTab(event,'doble-region')">Región</button>
+        <button class="tab-btn" onclick="openTab(event,'doble-ejemplo')">Ejemplo resuelto</button>
+        <button class="tab-btn" onclick="openTab(event,'doble-aplicacion')">Aplicación</button>
+      </div>
+      <div id="doble-concepto" class="tab-panel active">
+        <p>Una integral doble acumula una cantidad sobre una región plana R. Cuando la función f(x,y) representa altura, la integral doble calcula el volumen bajo la superficie sobre R.</p>
+        <div class="formula">∫∫<sub>R</sub> f(x,y) dA</div>
+        <p>Si f(x,y) = 1, la integral calcula el área de la región R.</p>
+      </div>
+      <div id="doble-region" class="tab-panel">
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Región tipo I</h3>
+            <div class="formula">a ≤ x ≤ b, &nbsp; g<sub>1</sub>(x) ≤ y ≤ g<sub>2</sub>(x)</div>
+            <p>Se integra primero en y y luego en x.</p>
+          </div>
+          <div class="card">
+            <h3>Región tipo II</h3>
+            <div class="formula">c ≤ y ≤ d, &nbsp; h<sub>1</sub>(y) ≤ x ≤ h<sub>2</sub>(y)</div>
+            <p>Se integra primero en x y luego en y.</p>
+          </div>
+        </div>
+      </div>
+      <div id="doble-ejemplo" class="tab-panel">
+        <h3>Ejemplo académico</h3>
+        <p>Calcular ∫∫<sub>R</sub> (x + 2y) dA, donde R = [0,2] × [0,1].</p>
+        <details open><summary>Desarrollo paso a paso</summary>
+          <div class="formula">∫<sub>0</sub><sup>2</sup> ∫<sub>0</sub><sup>1</sup> (x + 2y) dy dx</div>
+          <p>Integral interna:</p>
+          <div class="formula">∫<sub>0</sub><sup>1</sup> (x + 2y) dy = xy + y² |<sub>0</sub><sup>1</sup> = x + 1</div>
+          <p>Integral externa:</p>
+          <div class="formula">∫<sub>0</sub><sup>2</sup> (x + 1) dx = x²/2 + x |<sub>0</sub><sup>2</sup> = 4</div>
+          <p>Resultado: 4 unidades acumuladas.</p>
+        </details>
+      </div>
+      <div id="doble-aplicacion" class="tab-panel">
+        <p>En Ciencia de Datos, una integral doble puede representar la acumulación de una métrica de riesgo sobre una zona geográfica o sobre una matriz continua de variables.</p>
+        <p>En Ingeniería Industrial, puede modelar la acumulación de temperatura, presión o defectos sobre una superficie de producción.</p>
+      </div>
+    </section>
+
+    <section id="triples">
+      <h2>Integrales triples</h2>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event,'triple-concepto')">Concepto</button>
+        <button class="tab-btn" onclick="openTab(event,'triple-coordenadas')">Coordenadas</button>
+        <button class="tab-btn" onclick="openTab(event,'triple-ejemplo')">Ejemplo resuelto</button>
+        <button class="tab-btn" onclick="openTab(event,'triple-aplicacion')">Aplicación</button>
+      </div>
+      <div id="triple-concepto" class="tab-panel active">
+        <p>Una integral triple acumula una magnitud en un sólido E. Si f(x,y,z) representa densidad, la integral triple calcula masa. Si representa concentración, calcula cantidad total de sustancia. Si representa temperatura acumulada, permite estimar carga térmica.</p>
+        <div class="formula">∫∫∫<sub>E</sub> f(x,y,z) dV</div>
+      </div>
+      <div id="triple-coordenadas" class="tab-panel">
+        <table>
+          <thead><tr><th>Sistema</th><th>Diferencial</th><th>Uso recomendado</th></tr></thead>
+          <tbody>
+            <tr><td>Rectangulares</td><td>dV = dx dy dz</td><td>Cajas, prismas, regiones con límites directos.</td></tr>
+            <tr><td>Cilíndricas</td><td>dV = r dz dr dθ</td><td>Cilindros, tuberías, depósitos, simetría circular.</td></tr>
+            <tr><td>Esféricas</td><td>dV = ρ² sinφ dρ dφ dθ</td><td>Esferas, domos, ondas, campos radiales.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="triple-ejemplo" class="tab-panel">
+        <h3>Ejemplo académico</h3>
+        <p>Calcular el volumen del sólido rectangular 0 ≤ x ≤ 2, 0 ≤ y ≤ 3, 0 ≤ z ≤ 4.</p>
+        <details open><summary>Desarrollo paso a paso</summary>
+          <div class="formula">V = ∫<sub>0</sub><sup>2</sup> ∫<sub>0</sub><sup>3</sup> ∫<sub>0</sub><sup>4</sup> 1 dz dy dx</div>
+          <p>Primero: ∫<sub>0</sub><sup>4</sup> 1 dz = 4.</p>
+          <p>Luego: ∫<sub>0</sub><sup>3</sup> 4 dy = 12.</p>
+          <p>Finalmente: ∫<sub>0</sub><sup>2</sup> 12 dx = 24.</p>
+          <p>Resultado: el volumen es 24 unidades cúbicas.</p>
+        </details>
+      </div>
+      <div id="triple-aplicacion" class="tab-panel">
+        <p>En sistemas y software, una integral triple puede modelar carga térmica dentro de un centro de datos cuando la temperatura depende de la posición espacial. En multimedia, puede representar densidad de luz, partículas o color dentro de una escena volumétrica. En industrial, permite estimar masa, inventario físico o concentración dentro de un tanque.</p>
+      </div>
+    </section>
+
+    <section id="comparador">
+      <h2>Comparador interactivo: elige la integral correcta</h2>
+      <p>Lee el caso y selecciona el tipo de integral que mejor corresponde.</p>
+      <div class="grid grid-2">
+        <div class="card">
+          <label for="caseSelect">Caso</label>
+          <select id="caseSelect">
+            <option value="1">Costo computacional acumulado sobre la trayectoria de una cámara 3D</option>
+            <option value="2">Volumen de material bajo una superficie de diseño industrial</option>
+            <option value="3">Cantidad total de calor dentro de un servidor físico</option>
+            <option value="4">Masa de una lámina con densidad variable</option>
+            <option value="5">Trabajo de una fuerza sobre el recorrido de un robot</option>
+          </select>
+          <label for="typeSelect">Tipo de integral</label>
+          <select id="typeSelect">
+            <option value="linea">Integral en línea</option>
+            <option value="doble">Integral doble</option>
+            <option value="triple">Integral triple</option>
+          </select>
+          <button class="btn" onclick="checkComparator()">Comprobar</button>
+        </div>
+        <div id="compResult" class="result"></div>
+      </div>
+    </section>
+
+    <section id="simulador">
+      <h2>Simulador rápido de acumulación</h2>
+      <p>Este simulador aproxima integrales sencillas para fortalecer la intuición. No reemplaza el desarrollo analítico; ayuda a visualizar la acumulación.</p>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Integral doble en un rectángulo</h3>
+          <p>Función: f(x,y) = ax + by + c sobre 0 ≤ x ≤ L, 0 ≤ y ≤ H.</p>
+          <div class="grid grid-3">
+            <div><label>a</label><input id="a" type="number" value="1" step="0.1"></div>
+            <div><label>b</label><input id="b" type="number" value="2" step="0.1"></div>
+            <div><label>c</label><input id="c" type="number" value="0" step="0.1"></div>
+            <div><label>L</label><input id="L" type="number" value="2" step="0.1"></div>
+            <div><label>H</label><input id="H" type="number" value="1" step="0.1"></div>
+            <div><label>Subdivisiones</label><input id="n" type="number" value="40" min="5" max="200"></div>
+          </div>
+          <button class="btn" onclick="approxDouble()">Aproximar integral doble</button>
+          <div id="doubleResult" class="result"></div>
+        </div>
+        <div class="card">
+          <h3>Visualización de trayectoria</h3>
+          <p>Curva de referencia: r(t) = (t, t²), 0 ≤ t ≤ 1.</p>
+          <canvas id="curveCanvas" width="700" height="360"></canvas>
+          <button class="btn secondary" onclick="animateCurve()">Animar trayectoria</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="casos">
+      <h2>Casos aplicados por carrera</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Ingeniería Multimedia</h3>
+          <p><strong>Contexto:</strong> Una empresa desarrolla una escena 3D con niebla volumétrica. La densidad visual depende de la posición dentro del entorno.</p>
+          <p><strong>Modelo sugerido:</strong> usar integral triple para estimar densidad total de partículas en un volumen de renderizado.</p>
+          <p><strong>Interpretación esperada:</strong> relacionar el resultado con costo computacional, calidad visual y optimización de recursos.</p>
+        </div>
+        <div class="card">
+          <h3>Ingeniería Industrial</h3>
+          <p><strong>Contexto:</strong> Una planta mide concentración de calor en un tanque cilíndrico usado en un proceso productivo.</p>
+          <p><strong>Modelo sugerido:</strong> usar integral triple en coordenadas cilíndricas.</p>
+          <p><strong>Interpretación esperada:</strong> explicar impacto en seguridad, eficiencia energética y control de calidad.</p>
+        </div>
+        <div class="card">
+          <h3>Ciencia de Datos</h3>
+          <p><strong>Contexto:</strong> Una compañía analiza una función de riesgo distribuida sobre una zona de operación logística.</p>
+          <p><strong>Modelo sugerido:</strong> usar integral doble sobre una región plana.</p>
+          <p><strong>Interpretación esperada:</strong> asociar la acumulación con toma de decisiones y priorización de recursos.</p>
+        </div>
+        <div class="card">
+          <h3>Software y Sistemas</h3>
+          <p><strong>Contexto:</strong> Un robot de mantenimiento recorre una ruta dentro de un centro de datos; el esfuerzo depende de la dirección y magnitud de un campo de resistencia.</p>
+          <p><strong>Modelo sugerido:</strong> usar integral en línea de campo vectorial.</p>
+          <p><strong>Interpretación esperada:</strong> relacionar el resultado con consumo energético, mantenimiento predictivo y planeación de rutas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <h2>Verificación conceptual estilo Saber Pro y TyT</h2>
+      <p>Selecciona la opción correcta. Al final podrás revisar tu resultado.</p>
+      <form id="quizForm">
+        <div class="card">
+          <h3>Pregunta 1</h3>
+          <p>Una integral en línea de campo vectorial se utiliza principalmente cuando se desea:</p>
+          <label><input type="radio" name="q1" value="A"> Calcular el área de una región plana.</label>
+          <label><input type="radio" name="q1" value="B"> Calcular el trabajo acumulado de una fuerza a lo largo de una trayectoria.</label>
+          <label><input type="radio" name="q1" value="C"> Calcular el volumen de un sólido esférico.</label>
+          <label><input type="radio" name="q1" value="D"> Determinar el dominio de una función.</label>
+        </div>
+        <div class="card">
+          <h3>Pregunta 2</h3>
+          <p>Si f(x,y) representa la altura de una superficie sobre una región R, entonces ∫∫<sub>R</sub> f(x,y)dA representa:</p>
+          <label><input type="radio" name="q2" value="A"> La longitud de una curva.</label>
+          <label><input type="radio" name="q2" value="B"> La pendiente máxima.</label>
+          <label><input type="radio" name="q2" value="C"> El volumen bajo la superficie.</label>
+          <label><input type="radio" name="q2" value="D"> La derivada direccional.</label>
+        </div>
+        <div class="card">
+          <h3>Pregunta 3</h3>
+          <p>Considere las afirmaciones:</p>
+          <p>I. Las coordenadas cilíndricas son útiles cuando la región presenta simetría circular.</p>
+          <p>II. En coordenadas cilíndricas el diferencial de volumen es dV = r dz dr dθ.</p>
+          <p>III. Las integrales triples solo permiten calcular áreas planas.</p>
+          <label><input type="radio" name="q3" value="A"> Solo I es verdadera.</label>
+          <label><input type="radio" name="q3" value="B"> I y II son verdaderas.</label>
+          <label><input type="radio" name="q3" value="C"> II y III son verdaderas.</label>
+          <label><input type="radio" name="q3" value="D"> I, II y III son verdaderas.</label>
+        </div>
+        <button type="button" class="btn" onclick="gradeQuiz()">Calificar verificación</button>
+      </form>
+      <div id="quizResult" class="result"></div>
+    </section>
+
+    <section id="reto">
+      <h2>Mini-reto por equipos: consultoría de modelación multivariada</h2>
+      <p>Cada equipo asume el rol de una unidad consultora que debe seleccionar y justificar el tipo de integral más adecuada para un problema empresarial.</p>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Roles sugeridos</h3>
+          <div class="role"><strong>Líder de modelación:</strong> identifica variables, región y tipo de integral.</div>
+          <div class="role"><strong>Analista matemático:</strong> plantea límites, diferencial e integrando.</div>
+          <div class="role"><strong>Validador de interpretación:</strong> revisa coherencia del resultado con el contexto.</div>
+          <div class="role"><strong>Relator técnico:</strong> organiza la explicación escrita y la socialización.</div>
+        </div>
+        <div class="card">
+          <h3>Entregable breve</h3>
+          <ol>
+            <li>Descripción del contexto empresarial.</li>
+            <li>Variables y unidad de medida.</li>
+            <li>Tipo de integral seleccionada y justificación.</li>
+            <li>Planteamiento matemático completo.</li>
+            <li>Interpretación del resultado esperado.</li>
+            <li>Recomendación técnica para la empresa.</li>
+          </ol>
+        </div>
+      </div>
+      <h3>Rúbrica rápida de revisión</h3>
+      <table>
+        <thead><tr><th>Criterio</th><th>Excelente</th><th>En proceso</th><th>Debe fortalecerse</th></tr></thead>
+        <tbody>
+          <tr><td>Interpretación del contexto</td><td>Reconoce con claridad dónde ocurre la acumulación.</td><td>Identifica el contexto, pero con relación parcial al modelo.</td><td>No diferencia trayectoria, región o volumen.</td></tr>
+          <tr><td>Formulación matemática</td><td>Plantea integrando, límites y diferencial de manera coherente.</td><td>Presenta la integral, pero con vacíos en límites o variables.</td><td>El planteamiento no corresponde al fenómeno.</td></tr>
+          <tr><td>Argumentación</td><td>Explica el resultado y su utilidad empresarial.</td><td>Interpreta de forma general, sin suficiente profundidad.</td><td>Entrega una respuesta numérica sin sentido contextual.</td></tr>
+          <tr><td>Comunicación escrita</td><td>Elabora un texto con una estructura básica que permite una organización lógica de la información.</td><td>El texto es comprensible, pero requiere mayor orden.</td><td>La explicación es fragmentada o difícil de seguir.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Cierre de la sesión</h2>
+      <p>Para cerrar, cada estudiante responde en tres líneas:</p>
+      <ol>
+        <li>¿Qué diferencia esencial hay entre integral en línea, doble y triple?</li>
+        <li>¿Qué elemento del planteamiento le resultó más retador: integrando, región, límites o interpretación?</li>
+        <li>¿En qué situación de su carrera podría usar este tipo de integral?</li>
+      </ol>
+      <p class="small">Este material está diseñado para apoyar una clase guiada, interactiva y contextualizada. Puede subirse como archivo HTML a un entorno web o integrarse como recurso enlazado en Teams.</p>
+    </section>
+
+    <p class="footer">Clase interactiva de Cálculo Multivariado. Diseño pedagógico con enfoque universidad-empresa y aprendizaje colaborativo por equipos.<br><strong>Diseñada por Astrid Bolivar.</strong></p>
+  </main>
+
+  <script>
+    function openTab(evt, tabId){
+      const section = evt.target.closest('section');
+      section.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      section.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      evt.target.classList.add('active');
+    }
+
+    function respuestaConexion(){
+      const v = document.getElementById('conexionSelect').value;
+      const box = document.getElementById('conexionResult');
+      const msg = {
+        linea:'Corresponde a una integral en línea, porque la acumulación ocurre sobre una curva o trayectoria.',
+        doble:'Corresponde a una integral doble, porque la acumulación ocurre sobre una región plana o una superficie proyectada.',
+        triple:'Corresponde a una integral triple, porque la acumulación ocurre dentro de un volumen tridimensional.'
+      };
+      box.textContent = msg[v] || 'Selecciona una estructura para recibir orientación.';
+    }
+
+    function checkComparator(){
+      const c = document.getElementById('caseSelect').value;
+      const t = document.getElementById('typeSelect').value;
+      const correct = {1:'linea',2:'doble',3:'triple',4:'doble',5:'linea'};
+      const why = {
+        1:'La cámara sigue una trayectoria; por tanto, la acumulación ocurre sobre una curva.',
+        2:'El volumen bajo una superficie sobre una región plana se modela con integral doble.',
+        3:'El calor se distribuye dentro de un objeto tridimensional; se requiere integral triple.',
+        4:'Una lámina es una región bidimensional con densidad variable; se usa integral doble.',
+        5:'El trabajo de una fuerza sobre un recorrido se modela con integral en línea de campo vectorial.'
+      };
+      const box = document.getElementById('compResult');
+      if(t === correct[c]){
+        box.className = 'result feedback ok';
+        box.innerHTML = '<strong>Correcto.</strong> ' + why[c];
+      } else {
+        box.className = 'result feedback bad';
+        box.innerHTML = '<strong>Revisa el criterio.</strong> ' + why[c];
+      }
+    }
+
+    function approxDouble(){
+      const a = parseFloat(document.getElementById('a').value);
+      const b = parseFloat(document.getElementById('b').value);
+      const c = parseFloat(document.getElementById('c').value);
+      const L = parseFloat(document.getElementById('L').value);
+      const H = parseFloat(document.getElementById('H').value);
+      const n = parseInt(document.getElementById('n').value);
+      const dx = L/n, dy = H/n;
+      let sum = 0;
+      for(let i=0;i<n;i++){
+        for(let j=0;j<n;j++){
+          const x = (i + 0.5)*dx;
+          const y = (j + 0.5)*dy;
+          sum += (a*x + b*y + c)*dx*dy;
+        }
+      }
+      const exact = (a*L*L*H/2) + (b*L*H*H/2) + (c*L*H);
+      document.getElementById('doubleResult').innerHTML = '<strong>Aproximación:</strong> ' + sum.toFixed(5) + '<br><strong>Valor exacto para esta función lineal:</strong> ' + exact.toFixed(5) + '<br><span class="small">Interpretación: representa la acumulación total de f(x,y) sobre el rectángulo definido.</span>';
+    }
+
+    let animFrame = null;
+    function drawCurve(progress=1){
+      const canvas = document.getElementById('curveCanvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0,0,W,H);
+      ctx.strokeStyle = '#ffd1b3';
+      ctx.lineWidth = 1;
+      for(let i=0;i<=10;i++){
+        const x = 50 + i*(W-100)/10;
+        const y = H-45 - i*(H-100)/10;
+        ctx.beginPath();ctx.moveTo(x,35);ctx.lineTo(x,H-45);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(50,y);ctx.lineTo(W-40,y);ctx.stroke();
+      }
+      ctx.strokeStyle = '#1e293b';ctx.lineWidth = 2;
+      ctx.beginPath();ctx.moveTo(50,H-45);ctx.lineTo(W-40,H-45);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(50,H-45);ctx.lineTo(50,35);ctx.stroke();
+      function sx(t){return 50 + t*(W-100)}
+      function sy(t){return H-45 - (t*t)*(H-100)}
+      ctx.strokeStyle = '#FF6600';ctx.lineWidth = 5;ctx.beginPath();
+      let first = true;
+      const steps = Math.max(2, Math.floor(160*progress));
+      for(let k=0;k<=steps;k++){
+        const t = k/160;
+        if(t>progress) break;
+        if(first){ctx.moveTo(sx(t),sy(t));first=false}else{ctx.lineTo(sx(t),sy(t));}
+      }
+      ctx.stroke();
+      const t = progress;
+      ctx.fillStyle = '#FF6600';
+      ctx.beginPath();ctx.arc(sx(t),sy(t),10,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle = '#1e293b';ctx.font = '18px Arial';
+      ctx.fillText('r(t) = (t, t²)', 72, 54);
+      ctx.fillText('t = ' + t.toFixed(2), sx(t)+14, sy(t)-12);
+    }
+    function animateCurve(){
+      if(animFrame) cancelAnimationFrame(animFrame);
+      const start = performance.now();
+      function step(now){
+        const p = Math.min(1,(now-start)/2500);
+        drawCurve(p);
+        if(p<1) animFrame = requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function gradeQuiz(){
+      const answers = {q1:'B', q2:'C', q3:'B'};
+      let score = 0;
+      let total = Object.keys(answers).length;
+      Object.keys(answers).forEach(q=>{
+        const selected = document.querySelector('input[name="'+q+'"]:checked');
+        if(selected && selected.value === answers[q]) score++;
+      });
+      const box = document.getElementById('quizResult');
+      box.className = 'result ' + (score===total ? 'feedback ok' : 'feedback bad');
+      box.innerHTML = '<strong>Resultado:</strong> ' + score + ' de ' + total + '.<br>' +
+        '<strong>Respuestas correctas:</strong> 1B, 2C, 3B.<br>' +
+        '<span class="small">Recomendación: si fallaste alguna, revisa si la acumulación se realiza sobre trayectoria, región plana o volumen.</span>';
+    }
+
+    drawCurve(1);
+  </script>
+</body>
+</html>
